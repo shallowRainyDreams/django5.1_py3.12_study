@@ -1,0 +1,40 @@
+
+
+<!--模板命名空间-->
+
+<!--虽然我们现在可以将模板文件直接放在 polls/templates 文件夹中（而不是再建立一个 polls 子文件夹），-->
+<!--但是这样做不太好。-->
+<!--Django 将会选择第一个匹配的模板文件，如果你有一个模板文件正好和另一个应用中的某个模板文件重名，-->
+<!--Django 没有办法 区分 它们。我们需要帮助 Django 选择正确的模板，最好的方法就是把他们放入各自的 命名空间 中，-->
+<!--也就是把这些模板放入一个和 自身 应用重名的子文件夹里。-->
+
+<!--我的理解：django读取所有应用的templates文件，并根据.html名称去寻找，如果不在.html上一级目录上增加应用名称-->
+<!--就会造成同名.html路径混乱-->
+
+<!--例如，如果你有两个应用，分别是polls和blog，并且它们都有一个名为detail.html的模板文件，
+你可以将它们分别放在polls/templates/polls/detail.html和blog/templates/blog/detail.html中。
+这样，当你在polls应用的视图中渲染detail.html模板时，
+Django会明确知道你想要的是polls/templates/polls/detail.html，
+而不是blog/templates/blog/detail.html（除非你在模板标签中明确指定了后者）。-->
+
+<!--然而，如果你选择将模板文件直接放在应用的templates目录下（
+即polls/templates/detail.html和blog/templates/detail.html），
+而没有创建与应用同名的子文件夹，那么当Django在查找模板时，它将无法区分这两个同名的模板文件，
+除非你在模板标签中指定了它们的完整路径。这可能会增加模板配置的复杂性，并增加出错的风险。-->
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'polls/style.css' %}">
+
+{% if latest_question_list %}
+    <ul>
+    {% for question in latest_question_list %}
+<!--        {% url 'polls:detail' question.id %}相当于是访问polls下name是detail的url
+            question.id是传入的参数
+-->
+       <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
